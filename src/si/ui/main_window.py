@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices,QIcon
+from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtMultimedia import QMediaDevices
 from PySide6.QtWidgets import (
     QApplication,
@@ -64,8 +64,7 @@ class MainWindow(QMainWindow):
         self.tray = None
         self._log_dialog = None
         self.setWindowTitle("同传 SI")
-        # self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_MediaVolume))
-        self.setWindowIcon(QIcon(str(Path.cwd() / "res" / "icon.png")))
+        self.setWindowIcon(QIcon(str(Path(__file__).resolve().parents[1] / "res" / "icon.png")))
         self.resize(1280, 780)
         self.setMinimumSize(1060, 670)
         central = QWidget()

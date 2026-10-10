@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from si.domain import Settings
+from si.storage import credential_store_name
 from si.ui.widgets import ChoiceCombo, tool_button
 
 
@@ -120,7 +121,7 @@ class SettingsDialog(QDialog):
                 QLineEdit.EchoMode.Normal if checked else QLineEdit.EchoMode.Password
             )
         )
-        self.remember = QCheckBox("在 Windows 凭据管理器中保存密钥")
+        self.remember = QCheckBox(f"在 {credential_store_name()} 中保存密钥")
         self.remember.setChecked(remember)
         self.key_status = QLabel()
         self.key_status.setObjectName("mutedText")
@@ -196,7 +197,7 @@ class SettingsDialog(QDialog):
             and self.workspace.text().strip() == self.settings.workspace_id
             and self.region.currentData() == self.settings.region
         ):
-            text = "已保存到 Windows 凭据管理器"
+            text = f"已保存到 {credential_store_name()}"
         else:
             text = "密钥尚未保存"
         self.key_status.setText(text)

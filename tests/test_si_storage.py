@@ -6,6 +6,17 @@ from si.domain import Settings
 from si.storage import ConfigStore, CredentialStore
 
 
+@pytest.mark.parametrize(
+    ("platform", "expected"),
+    [("win32", "Windows 凭据管理器"), ("darwin", "macOS 钥匙串"), ("linux", "系统密钥环")],
+)
+def test_credential_store_name_matches_platform(monkeypatch, platform, expected):
+    from si import storage
+
+    monkeypatch.setattr(storage.sys, "platform", platform)
+    assert storage.credential_store_name() == expected
+
+
 def test_configuration_round_trip_never_persists_credentials(tmp_path, monkeypatch):
     monkeypatch.delenv("DASHSCOPE_WORKSPACE_ID", raising=False)
     store = ConfigStore(tmp_path / "settings.json")

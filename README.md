@@ -6,11 +6,11 @@
 
 <p align="center">
   <strong>让你的发言被听懂，也让对方的发言听得懂。</strong><br>
-  Windows 双向同声传译 · 实时译音 · 双语字幕 · 自定义术语
+  跨平台双向同声传译 · 实时译音 · 双语字幕 · 自定义术语
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square" alt="平台：Windows">
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Ubuntu%20%7C%20macOS-0078D4?style=flat-square" alt="平台：Windows、Ubuntu、macOS">
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12 及以上"></a>
   <a href="https://doc.qt.io/qtforpython-6/"><img src="https://img.shields.io/badge/UI-PySide6-41CD52?style=flat-square&logo=qt&logoColor=white" alt="界面：PySide6"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-BSD--3--Clause-6750A4?style=flat-square" alt="许可证：BSD 3-Clause"></a>
@@ -27,7 +27,7 @@
 
 ---
 
-**同传 SI** 是面向在线会议与跨语言交流的桌面应用，接入阿里云百炼的 `qwen3.8-livetranslate-flash-realtime` 模型。它将你的发言翻译后送入会议软件，同时把对方的发言翻译后播放到耳机，两条链路独立运行。
+**同传 SI** 是面向在线会议与跨语言交流的桌面应用，支持 Windows、Ubuntu 和 macOS，接入阿里云百炼的 `qwen3.8-livetranslate-flash-realtime` 模型。它将你的发言翻译后送入会议软件，同时把对方的发言翻译后播放到耳机，两条链路独立运行。
 
 应用使用 **PySide6 Widgets** 构建界面，音频采集与播放由 **Qt Multimedia** 完成，支持浅色与深色主题。
 
@@ -40,16 +40,46 @@
 | 💬 双语字幕 | 原文与译文独立显示，支持按方向筛选、自动跟随和手动导出 |
 | 🗣️ 语言与音色 | 界面提供 29 种目标语言选项、7 个音色预设，每路可单独选择 |
 | 📖 自定义术语 | 为两个方向分别配置术语表，在会话建立时发送给模型 |
-| 🔐 凭据管理 | 可将密钥保存在 Windows 凭据管理器，普通配置文件不包含 API Key |
+| 🔐 凭据管理 | 可将密钥保存在系统凭据服务，普通配置文件不包含 API Key |
 | 🧰 诊断与恢复 | 本地设备测试、运行日志查看器、有限次数自动重连和音频积压保护 |
 
 ## 快速开始
+
+### 下载可执行程序
+
+版本发布后，从 [GitHub Releases](https://github.com/KT-network/SI/releases) 下载对应平台的压缩包，无需安装 Python：
+
+| 平台 | 下载文件 | 启动方式 |
+| :--- | :--- | :--- |
+| Windows x64 | `SI-vX.Y.Z-windows-x64.zip` | 解压后双击 `SI/SI.exe` |
+| Ubuntu 22.04+ x64 | `SI-vX.Y.Z-ubuntu-x64.tar.gz` | 解压后运行 `./SI/SI` |
+| macOS 15+ Intel | `SI-vX.Y.Z-macos-x64.zip` | 打开 `SI/SI.app` |
+| macOS 15+ Apple Silicon | `SI-vX.Y.Z-macos-arm64.zip` | 打开 `SI/SI.app` |
+
+请完整解压并保留随包文件，Windows 版需要与 `_internal` 文件夹一起使用。Release 同时提供 `SHA256SUMS.txt` 供校验下载文件。
+
+Ubuntu 桌面需具备 Qt 图形库、音频服务和中文字体。若提示缺少系统库，可执行：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libegl1 libgl1 libglib2.0-0 libdbus-1-3 \
+  libxkbcommon0 libxkbcommon-x11-0 libxcb-cursor0 libxcb-xinerama0 \
+  libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 \
+  libxcb-randr0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 \
+  libpulse0 libasound2 fonts-noto-cjk
+```
+
+Ubuntu 24.04 及以上版本将命令中的 `libasound2` 替换为 `libasound2t64`。
+
+当前下载包未使用 Windows 开发者证书签名，也未进行 Apple 公证；系统可能提示验证来源。macOS 首次使用输入设备时需要允许麦克风访问。
+
+以下步骤适用于从源码运行；使用可执行程序时可直接查看[首次配置](#3-完成首次配置)。
 
 ### 1. 准备环境
 
 | 项目 | 要求 |
 | :--- | :--- |
-| 操作系统 | Windows |
+| 操作系统 | Windows、Ubuntu 桌面或 macOS |
 | Python | 3.12 或更高版本 |
 | 包管理器 | [uv](https://docs.astral.sh/uv/getting-started/installation/) |
 | 模型服务 | 阿里云百炼 API Key、业务空间 ID，以及对应地域的实时同传模型权限 |
@@ -57,7 +87,7 @@
 
 ### 2. 安装并启动
 
-在 PowerShell 中执行：
+在终端中执行：
 
 ```powershell
 git clone https://github.com/KT-network/SI.git
@@ -66,11 +96,13 @@ uv sync --group dev
 uv run python -m si
 ```
 
-在项目目录中也可使用启动脚本：
+Windows 用户在项目目录中也可使用启动脚本：
 
 ```powershell
 .\run.ps1
 ```
+
+源码依赖包含历史原型使用的 PyAudio。Ubuntu 安装依赖前需执行 `sudo apt-get install portaudio19-dev`；macOS 需执行 `brew install portaudio`。
 
 ### 3. 完成首次配置
 
@@ -88,7 +120,7 @@ uv run python -m si
 
 ## 音频接线
 
-会议场景需要 **两条相互独立的虚拟音频连接**，例如 [VB-CABLE A/B](https://vb-audio.com/Cable/)。单条虚拟音频线无法同时承担这两条隔离链路；驱动需自行安装，应用不会安装或修改系统音频驱动。
+会议场景需要 **两条相互独立的虚拟音频连接**。Windows 可使用 [VB-CABLE A/B](https://vb-audio.com/Cable/)，macOS 可使用两条独立的虚拟音频路由，Ubuntu 可通过 PulseAudio / PipeWire 配置独立虚拟输出及对应监听输入。驱动或音频路由需自行配置，应用不会安装或修改系统音频驱动。
 
 以 VB-CABLE A/B 的常见设备名称为例：
 
@@ -107,6 +139,8 @@ uv run python -m si
 ```
 
 虚拟设备名称中的 `Input` 是播放写入端，`Output` 是录音采集端。应用保存设备 ID；设备断开后会显示不可用，不会自动切换到其他设备。
+
+上表使用 Windows 设备名称；在 Ubuntu、macOS 中按相同的写入、采集关系选择对应端点。
 
 > [!TIP]
 > 建议先使用耳机验证双向链路。当前版本尚未接入声学回声消除（AEC）；扬声器外放可能被麦克风再次拾取，造成译音回流。
@@ -158,7 +192,7 @@ uv run python -m si
 ## 配置与隐私
 
 - **普通设置**：设备、语言、音色、主题、术语表和导出选项保存为本地 JSON 配置，API Key 不写入该文件。
-- **密钥保存**：「在 Windows 凭据管理器中保存密钥」默认选中，写入后立即读回校验；重启后自动加载，已保存密钥优先于环境变量。
+- **密钥保存**：保存密钥选项默认选中，写入后立即读回校验；Windows 使用凭据管理器，macOS 使用钥匙串，Linux 使用系统密钥环。重启后自动加载，已保存密钥优先于环境变量。
 - **仅本次使用**：取消保存密钥会移除当前地域、业务空间对应的已存凭据，界面填写的密钥仅用于当前进程。
 - **音频与字幕**：应用不自动保存原始音频或字幕；实时翻译期间会向模型服务发送音频，配置术语表时也会发送术语。
 - **运行日志**：不记录原始音频、完整 API 消息、字幕内容或术语表，API Key 与鉴权字段会脱敏。
@@ -173,15 +207,19 @@ uv run python -m si
 
 已有配置中的业务空间 ID 优先于环境变量；启用凭据保存时，已存密钥优先于 `DASHSCOPE_API_KEY`。应用不会自动读取 `.env` 文件。
 
+Linux 保存密钥需要可用且已解锁的 Secret Service 服务，例如 GNOME Keyring。无法访问系统凭据服务时，可取消保存密钥，仅在本次运行中使用。
+
 ## 日志与排错
 
 点击主界面右上角的 **查看运行日志** 图标，或使用托盘菜单，可查看实时日志、筛选错误、复制堆栈和选择历史文件。查看器会显示实际日志路径，并提供打开文件夹按钮。
 
-默认日志位置通常为：
+Windows 默认日志位置通常为：
 
 ```text
 %LOCALAPPDATA%\SI\SI\logs\si.log
 ```
+
+Ubuntu、macOS 使用 Qt 对应的本地应用数据目录，以日志查看器显示的完整路径为准。
 
 日志文件上限为 **5 MiB**，保留 **5 份**历史文件；正常退出时等待待写日志落盘。打包环境可能将路径重定向到应用的 LocalCache 目录，以查看器显示的路径为准。目录不可写时，会回退到系统临时目录下的 `SI-logs` 并提示。
 
@@ -234,10 +272,38 @@ uv run python tools/check_voice_api.py Serena
 
 实际模型权限、计费、端到端延迟、音色听感、虚拟驱动路由和会议软件兼容性仍需在真实环境中验证。
 
+### 本地构建
+
+在目标操作系统上执行以下命令，构建、启动检查并生成该平台的压缩包：
+
+```bash
+uv sync --group build
+uv run --no-sync python tools/build_release.py
+```
+
+产物位于 `dist/release/`。每个平台使用原生构建；macOS Intel 与 Apple Silicon 分别构建，不使用跨系统编译。
+
+### GitHub 自动构建与发布
+
+[Release 工作流](.github/workflows/release.yml) 会在推送 `v*` 版本标签时执行四个原生构建。每个构建先运行桌面应用测试，再使用 PyInstaller 打包，并从独立目录启动程序、生成界面截图以检查资源是否完整。
+
+提交工作流和相关代码后，推送版本标签即可发布：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+所有平台成功后，工作流使用 GitHub 自动提供的 `GITHUB_TOKEN` 创建 Release，上传四个平台压缩包与 SHA-256 校验文件；无需配置模型 API Key。`v0.1.0-rc.1` 等带后缀的标签会发布为预发行版本。
+
+也可在 **Actions → Build and release SI → Run workflow** 手动构建，产物保存在该次运行的 Artifacts 中，保留 14 天。手动构建不会创建 Release。发布任务需要仓库允许工作流使用 `contents: write` 权限。
+
 ## 项目结构
 
 ```text
 SI/
+├── .github/workflows/     # 多平台构建与 Release 发布
+├── packaging/            # 打包入口、PyInstaller 配置与随包说明
 ├── src/si/                 # 桌面应用
 │   ├── main.py            # 启动入口与命令行选项
 │   ├── domain.py          # 配置、语言、音色与状态定义
@@ -251,7 +317,7 @@ SI/
 │   ├── diagnostics.py     # 日志与异常诊断
 │   └── ui/                # 主窗口、设置、字幕与日志界面
 ├── tests/                 # 自动化测试
-├── tools/                 # 设备检查、音色验证与界面渲染工具
+├── tools/                 # 原生打包、设备检查、音色验证与界面渲染工具
 ├── docs/                  # 架构说明、架构图与项目横幅
 ├── pyproject.toml         # 项目依赖与打包配置
 ├── run.ps1                # Windows 启动脚本

@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QDialog, QSystemTrayIcon
 
 from si.audio import Device
 from si.domain import RealtimeEvent, Settings, State
-from si.storage import ConfigStore, CredentialStore
+from si.storage import ConfigStore, CredentialStore, credential_store_name
 from si.transcripts import TranscriptStore
 from si.ui.main_window import MainWindow
 from si.ui.settings_dialog import SettingsDialog
@@ -78,6 +78,23 @@ def add_subtitles(window):
         store.apply(direction, 1, RealtimeEvent("translation", "t", "Translation", final=True))
     window.mark_dirty()
     window.refresh_transcripts()
+
+
+def test_application_icon_is_available_outside_project(qapp, tmp_path, monkeypatch):
+    from si.ui import main_window
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(main_window, "list_devices", lambda inputs: [])
+    monkeypatch.setattr(QSystemTrayIcon, "isSystemTrayAvailable", lambda: False)
+    settings = Settings()
+    view = MainWindow(
+        settings, ConfigStore(tmp_path / "settings.json"), CredentialStore(),
+        controller=FakeController(settings),
+    )
+    try:
+        assert not view.windowIcon().isNull()
+    finally:
+        view.close()
 
 
 def test_display_toggles_never_change_voice_or_connections(window, qapp):
@@ -198,7 +215,7 @@ def test_key_status_reflects_pending_changes(qapp):
     dialog = SettingsDialog(
         Settings(workspace_id="workspace"), "saved-test-key", True, key_saved=True
     )
-    assert dialog.key_status.text() == "已保存到 Windows 凭据管理器"
+    assert dialog.key_status.text() == f"已保存到 {credential_store_name()}"
     dialog.key.setText("changed-test-key")
     assert dialog.key_status.text() == "密钥尚未保存"
     dialog.remember.setChecked(False)

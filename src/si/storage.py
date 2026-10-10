@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 import tempfile
 from dataclasses import asdict
 from pathlib import Path
@@ -14,6 +15,14 @@ from si.diagnostics import register_secret
 from si.domain import LANGUAGES, REGIONS, VOICE_IDS, Settings
 
 logger = logging.getLogger(__name__)
+
+
+def credential_store_name() -> str:
+    if sys.platform == "win32":
+        return "Windows 凭据管理器"
+    if sys.platform == "darwin":
+        return "macOS 钥匙串"
+    return "系统密钥环"
 
 
 class ConfigStore:
@@ -125,7 +134,7 @@ class CredentialStore:
         register_secret(api_key)
         keyring.set_password(self.SERVICE, self.account(settings), api_key)
         if self.read_saved(settings) != api_key:
-            raise RuntimeError("密钥写入后校验失败，未能从 Windows 凭据管理器读回")
+            raise RuntimeError(f"密钥写入后校验失败，未能从 {credential_store_name()} 读回")
         logger.info("Credential saved to system keyring and verified")
 
     def delete(self, settings: Settings) -> None:

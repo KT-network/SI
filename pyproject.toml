@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Bidirectional Qwen realtime interpretation desktop application"
 requires-python = ">=3.12"
 dependencies = [
+    "certifi>=2025.1.31",
     "dashscope>=1.27.5",
     "numpy>=2.5.3",
     "pyaudio>=0.2.14",
@@ -21,6 +22,7 @@ si = "si.main:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]
+build = ["pyinstaller>=6.16,<7", "Pillow>=11"]
 
 [build-system]
 requires = ["hatchling"]
