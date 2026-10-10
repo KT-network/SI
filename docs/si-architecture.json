@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "双向同声传译：音频与会话架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [1390, 760]
+  },
+  "components": [
+    { "id": "physical-mic", "type": "external", "label": "本地真实麦克风", "sublabel": "只采集本人声音", "pos": [40, 130], "size": [240, 84] },
+    { "id": "uplink-engine", "type": "backend", "label": "上行音频管线", "sublabel": "采集 / 重采样 / 译音播放", "pos": [400, 130], "size": [240, 84] },
+    { "id": "virtual-cable-a", "type": "external", "label": "虚拟音频线 A", "sublabel": "应用写 Input / 会议读 Output", "pos": [760, 130], "size": [240, 84] },
+    { "id": "meeting-mic", "type": "external", "label": "会议软件的麦克风", "sublabel": "对方听到翻译语音", "pos": [1120, 130], "size": [240, 84] },
+    { "id": "qwen-u-session", "type": "cloud", "label": "Qwen3.8 会话 U", "sublabel": "独立连接 / 例如译为英语", "pos": [400, 350], "size": [240, 84] },
+    { "id": "qwen-d-session", "type": "cloud", "label": "Qwen3.8 会话 D", "sublabel": "独立连接 / 例如译为中文", "pos": [760, 350], "size": [240, 84] },
+    { "id": "meeting-speaker", "type": "external", "label": "会议软件的扬声器", "sublabel": "远端发言的原始音频", "pos": [40, 570], "size": [240, 84] },
+    { "id": "virtual-cable-b", "type": "external", "label": "虚拟音频线 B", "sublabel": "会议写 Input / 应用读 Output", "pos": [400, 570], "size": [240, 84] },
+    { "id": "downlink-engine", "type": "backend", "label": "下行音频管线", "sublabel": "采集 / 重采样 / 译音播放", "pos": [760, 570], "size": [240, 84] },
+    { "id": "physical-speaker", "type": "external", "label": "真实耳机或扬声器", "sublabel": "本人听到翻译语音", "pos": [1120, 570], "size": [240, 84] }
+  ],
+  "connections": [
+    { "id": "mic-uplink", "from": "physical-mic", "to": "uplink-engine", "label": "本地原音", "variant": "emphasis" },
+    { "id": "uplink-cable", "from": "uplink-engine", "to": "virtual-cable-a", "label": "写入译音", "variant": "emphasis" },
+    { "id": "cable-meeting", "from": "virtual-cable-a", "to": "meeting-mic", "label": "虚拟麦克风", "variant": "emphasis" },
+    { "id": "uplink-qwen", "from": "uplink-engine", "to": "qwen-u-session", "label": "双向 WebSocket", "labelDy": 24 },
+    { "id": "meeting-cable", "from": "meeting-speaker", "to": "virtual-cable-b", "label": "写入远端原音", "variant": "emphasis" },
+    { "id": "cable-downlink", "from": "virtual-cable-b", "to": "downlink-engine", "label": "虚拟采集", "variant": "emphasis" },
+    { "id": "downlink-speaker", "from": "downlink-engine", "to": "physical-speaker", "label": "播放译音", "variant": "emphasis" },
+    { "id": "downlink-qwen", "from": "downlink-engine", "to": "qwen-d-session", "label": "双向 WebSocket" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "桌面控制层", "items": ["PySide6 + QML，GUI 留在主线程", "控制两条管线，分别启停和静音"] },
+    { "dot": "emerald", "title": "文字输出层", "items": ["原文与译文经事件分发进入字幕模型", "显示和保存分别控制，3.8 原文识别始终开启"] },
+    { "dot": "amber", "title": "实时音频层", "items": ["qwen3.8-livetranslate-flash-realtime", "有界队列 / 抖动缓冲 / 防回流"] }
+  ]
+}

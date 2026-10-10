@@ -1,0 +1,14 @@
+{
+  "diagram_type": "architecture",
+  "output": "D:/Code/Python/SI/docs/si-architecture.html",
+  "specification": "D:/Code/Python/SI/docs/si-architecture.json",
+  "specification_sha256": "1e167d39eb22a99c275d7975e6a09bb06fac603ccdd352ee75704af191dc2ae3",
+  "specification_bytes": 3446,
+  "artifact_sha256": "dfc4a8ebe4d04cfc5107d0dcf53f3e938c6b654e785d6241db1b128242f74bff",
+  "artifact_bytes": 706800,
+  "validation": "9/9 showcase, 0 errors, 0 warnings",
+  "visual_review": "passed",
+  "correction_rounds": 2,
+  "desktop_containment": "1440x900, 1600x1000, 1920x1080, 2048x1320 passed",
+  "visual_evidence": "si-architecture.visual-check.json"
+}
